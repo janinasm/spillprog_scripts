@@ -14,7 +14,9 @@ public class ForsvarselementProjektil : MonoBehaviour
             Debug.Log("FE projektil traff fiende");
 
             // kjører metode til gameobject for skade tatt
-            col.gameObject.transform.parent.gameObject.SendMessage("taSkade", skade);
+            
+			col.GetComponentInParent<FiendeHelse>().taSkade(skade);
+			//col.gameObject.transform.parent.gameObject.SendMessage("taSkade", skade);
 
             // sletter projektilen
             Destroy(gameObject);

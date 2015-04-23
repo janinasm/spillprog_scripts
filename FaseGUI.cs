@@ -9,8 +9,10 @@ public class FaseGUI : MonoBehaviour {
     public Text faseText;
     public Text rundeText;
     public GameObject slotContainer;
+	public GameObject faseTimer;
+	public GameObject fiendeTeller;
 
     // !TESTING!
-    public Text debugAntallFiender;
+    public Text fienderIgjen;
     public Text combatlogDebug;
 }

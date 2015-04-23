@@ -7,4 +7,5 @@ public class Fiende : MonoBehaviour
     public float helse = 200f;
     public int poengVerdi = 50;
     public float tidMellomAngrip = 1f;
+
 }

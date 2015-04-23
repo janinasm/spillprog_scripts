@@ -11,7 +11,8 @@ public class Poeng : MonoBehaviour
     void Start()
     {
         // setter poeng text
-        poengTekst.text = "Poeng: " + GameManager.instance.antallPoeng;
+        poengTekst.text = GameManager.instance.antallPoeng.ToString();
+		Debug.Log (GameManager.instance.antallPenger);
     }
 
     public void leggTilPoeng(int add)
@@ -20,6 +21,6 @@ public class Poeng : MonoBehaviour
         GameManager.instance.antallPoeng += add;
 
         // setter poeng text
-        poengTekst.text = "Poeng: " + GameManager.instance.antallPoeng;
+        poengTekst.text = GameManager.instance.antallPoeng.ToString();
     }
 }

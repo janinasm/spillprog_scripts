@@ -9,6 +9,13 @@ public class FaseSkifte : MonoBehaviour
     private Forberedelsesfase forberedelsesfase;
     private Kampfase kampfase;
     private FaseGUI faseGUI;
+	private FasebytteGraphics fasebyttegraphics;
+	private AudioManager audioManager;
+
+	void Awake(){
+		fasebyttegraphics = GameObject.Find ("gameController").GetComponent<FasebytteGraphics> ();
+		audioManager = GameObject.Find ("AudioManager").GetComponent<AudioManager> ();
+	}
 
     void Start()
     {
@@ -19,30 +26,37 @@ public class FaseSkifte : MonoBehaviour
 
         // setter GUI
         faseGUI.faseText.text = "Forberedelsesfase";
-        faseGUI.rundeText.text = "Runde " + GameManager.instance.runde.ToString();
+    
 
         // starter spillet i forberedelsesfasen
         GameManager.instance.erForberedelsesFase = true;
         forberedelsesfase.startForberedelsesFase();
+
     }
 
     void Update()
     {
-        // teller ned til 0 hvis det er forberedelsesfase
-        if (GameManager.instance.nedteller >= 0f && GameManager.instance.erForberedelsesFase)
-        {
-            GameManager.instance.nedteller -= Time.deltaTime;
+		if (GameManager.instance.gameHasStarted) {
+			// teller ned til 0 hvis det er forberedelsesfase
+			if (GameManager.instance.nedteller >= 0f && GameManager.instance.erForberedelsesFase) {
+				GameManager.instance.nedteller -= Time.deltaTime;
 
-            // oppdaterer nedtelleren i heltall
-            faseGUI.nedtellerText.text = GameManager.instance.nedteller.ToString("F0");
-        }
+				// oppdaterer nedtelleren i heltall
+				faseGUI.nedtellerText.text = GameManager.instance.nedteller.ToString ("F0");
+			}
+			//Starter grafikkendringen til natt
+			if (GameManager.instance.nedteller <= 5f && GameManager.instance.nedteller > 4f) {
+				fasebyttegraphics.byttFase ();
 
-        // 
-        if (GameManager.instance.nedteller <= 0f && GameManager.instance.erForberedelsesFase)
-        {
-            GameManager.instance.erForberedelsesFase = false;
-            SkiftFase(GameManager.instance.erForberedelsesFase);
-        }
+			}
+			// 
+			if (GameManager.instance.nedteller <= 0f && GameManager.instance.erForberedelsesFase) {
+				GameManager.instance.erForberedelsesFase = false;
+
+				SkiftFase (GameManager.instance.erForberedelsesFase);
+			}
+		}
+
     }
 
     public void SkiftFase(bool b)
@@ -50,14 +64,15 @@ public class FaseSkifte : MonoBehaviour
         if (b)
         {
             forberedelsesfase.startForberedelsesFase();
+			audioManager.TilDagAudio();
+			fasebyttegraphics.byttFase();
             GameManager.instance.erForberedelsesFase = true;
-
             faseGUI.faseText.text = "Forberedelsesfase";
         }
         else
         {
             kampfase.startKampfase();
-
+			audioManager.TilNatAudio();
             faseGUI.faseText.text = "Kampfase";
         }
     }

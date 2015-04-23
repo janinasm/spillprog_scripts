@@ -5,7 +5,13 @@ public class LandsbyHelse : MonoBehaviour {
 
     // script referanser
     private Landsby landsby;
+	public GameOver gameOver;
+	public bool isGameOver;
 
+	void Awake(){
+		gameOver = GameObject.Find ("gameController").GetComponent<GameOver> ();
+		isGameOver = gameOver.erGameOver;
+	}
     void Start()
     {
         // cacher referanser
@@ -25,8 +31,11 @@ public class LandsbyHelse : MonoBehaviour {
     }
 
     public void Die()
-    {
-        // sletter gameobjektet
-        Destroy(gameObject);
+	    {
+		if (!gameOver) {
+
+			gameOver.gameOverTime ();
+			isGameOver = true;
+		}
     }
 }

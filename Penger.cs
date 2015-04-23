@@ -10,7 +10,7 @@ public class Penger : MonoBehaviour {
     void Start()
     {   
         // setter tekst
-        pengeTekst.text = GameManager.instance.antallPenger.ToString() ;
+    	pengeTekst.text = GameManager.instance.antallPenger.ToString() +" ";
     }
 
     public void leggTilPenger(int add)
@@ -19,7 +19,7 @@ public class Penger : MonoBehaviour {
         GameManager.instance.antallPenger += add;
 
         // setter tekst
-        pengeTekst.text = "Penger: " + GameManager.instance.antallPenger;
+        pengeTekst.text = " "+ GameManager.instance.antallPenger.ToString()+" ";
     }
 
     public void fjernPenger(int remove)
@@ -28,7 +28,7 @@ public class Penger : MonoBehaviour {
         GameManager.instance.antallPenger -= remove;
 
         // setter tekst
-        pengeTekst.text = "Penger: " + GameManager.instance.antallPenger;
+		pengeTekst.text = GameManager.instance.antallPenger.ToString()+ " ";
     }
     
 }

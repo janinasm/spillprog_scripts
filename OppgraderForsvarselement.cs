@@ -2,24 +2,23 @@
 using System.Collections;
 
 public class OppgraderForsvarselement : MonoBehaviour
-{
-    private int maxLevel = 3;
+{	
+	// gameobject referanser
+	public GameObject detectionArea;
+    private int maxLevel = 4;
     private int oppgraderingKostnad;
     private Vector3 nyStorrelse;
 
-    // gameobject referanser
-    public Transform range;
-
-    // komponent referanser
-    private BoxCollider skyteRange;
-
+	//referanser til originalstørrelse
+	private float rangeScaleX;
+	private float rangeScalez;
+	
     // script referanser
     private Forsvarselement forsvarselement;
 
     void Start()
     {
         // cacher referanser
-        skyteRange = range.GetComponent<BoxCollider>() as BoxCollider;
         forsvarselement = GetComponent<Forsvarselement>();
     }
 
@@ -39,39 +38,54 @@ public class OppgraderForsvarselement : MonoBehaviour
             switch (forsvarselement.level)
             {
                 case 2:
-
-                    // lager ny størrelse til skyterange-gameobjekt
-                    nyStorrelse = new Vector3(3f, 0.1f, 16f);
-
-                    // sender med nye verdier til metode som oppgraderer verdiene
-                    oppgraderVerdier(nyStorrelse, oppgraderingKostnad);
-                    break;
-
-                case 3:
-
-                    // lager ny størrelse til skyterange-gameobjekt
-                    nyStorrelse = new Vector3(6f, 0.1f, 20f);
-
-                    // sender med nye verdier til metode som oppgraderer verdiene
-                    oppgraderVerdier(nyStorrelse, oppgraderingKostnad);
-                    break;
-            }
-        }
-
-        else
-        {
-            // TODO gi feilmeldinger til spilleren
+				//Henter nåværende størrelse;
+				Vector3 SwAndRange = detectionArea.transform.localScale;
+				// lager ny størrelse til skyterange-gameobjekt
+				SwAndRange.x = (detectionArea.transform.localScale.x *1.5f);
+				SwAndRange.z = (detectionArea.transform.localScale.z *1.1f);
+				detectionArea.transform.localScale = SwAndRange;
+				// sender med nye verdier til metode som oppgraderer verdiene
+				oppgraderVerdier( oppgraderingKostnad);
+				break;
+				
+			case 3:
+				//Henter nåværende størrelse;
+				Vector3 SwAndRange2 = detectionArea.transform.localScale;
+				// lager ny størrelse til skyterange-gameobjekt
+				SwAndRange2.x = (detectionArea.transform.localScale.x *1.8f);
+				SwAndRange2.z = (detectionArea.transform.localScale.z *1.15f);
+				detectionArea.transform.localScale = SwAndRange2;
+				// sender med nye verdier til metode som oppgraderer verdiene
+				oppgraderVerdier( oppgraderingKostnad);
+				break;
+				
+			case 4:
+				//Henter nåværende størrelse;
+				Vector3 SwAndRange3 = detectionArea.transform.localScale;
+				// lager ny størrelse til skyterange-gameobjekt
+				SwAndRange3.x = (detectionArea.transform.localScale.x *1.6f);
+				SwAndRange3.z = (detectionArea.transform.localScale.z *1.2f);
+				detectionArea.transform.localScale = SwAndRange3;
+				// sender med nye verdier til metode som oppgraderer verdiene
+				oppgraderVerdier( oppgraderingKostnad);
+				
+				break;
+			}
+		}
+		
+		else
+		{
+			// TODO gi feilmeldinger til spilleren
         }
     }
 
-    public void oppgraderVerdier(Vector3 str, int oPris)
+    public void oppgraderVerdier(int oPris)
     {
         // øker statistikk verdier
         forsvarselement.skade *= 1.5f;
         forsvarselement.helse *= 1.5f;
 
         // gir skyterange-gameobject ny størrelse
-        skyteRange.transform.localScale = str;
 
         // fjerner oppgraderingskostnad fra penger
         GameManager.instance.penger.fjernPenger(oPris);

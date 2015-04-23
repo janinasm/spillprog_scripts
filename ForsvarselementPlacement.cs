@@ -11,13 +11,17 @@ public class ForsvarselementPlacement : MonoBehaviour
     private Vector3 flyttPosisjon;
 
     // script referanser
-    private PlaceableForsvarselement placeableForsvarselement;
+   	private PlaceableForsvarselement placeableForsvarselement;
     private SelectedForsvarselement forrigeForsvarselement;
 
     // gameobject referanser
     public Transform holdtForsvarselement;
-
     public LayerMask forsvarselementMask;
+	public GameObject forsvarselementContainer;
+
+	void Awake(){
+		placeableForsvarselement = GetComponent<PlaceableForsvarselement> ();
+	}
 
     void Update()
     {
@@ -35,7 +39,7 @@ public class ForsvarselementPlacement : MonoBehaviour
             flyttPosisjon = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, avstandTilSkjerm));
 
             // gir gameobjektet plasseringen, men y-posisjon er 0 fordi det er bakkenivået
-            holdtForsvarselement.position = new Vector3(flyttPosisjon.x, 0, flyttPosisjon.z);
+            holdtForsvarselement.position = new Vector3(flyttPosisjon.x, -25, flyttPosisjon.z);
 
             // sjekker etter museklikk
             if (Input.GetMouseButtonDown(0))
@@ -88,6 +92,7 @@ public class ForsvarselementPlacement : MonoBehaviour
             // den ikke skal være det valgte objektet
             forrigeForsvarselement.settSomValgt(false);
         }
+
     }
 
     // lager gameobject sendt fra ForsvarselementManager
@@ -98,22 +103,23 @@ public class ForsvarselementPlacement : MonoBehaviour
 
         // instantiater gameobjectet og holder på det
         holdtForsvarselement = ((GameObject)Instantiate(b)).transform;
-
         // henter referanse til script som ligger på gameobjectet
         // brukes til å sjekke om gameobjektet kan plasseres ved å telle kollisjoner
         placeableForsvarselement = holdtForsvarselement.GetComponent<PlaceableForsvarselement>();
+
+		holdtForsvarselement.transform.parent = forsvarselementContainer.transform;
     }
 
     // sjekker om vi kan plassere gameobjektet
     bool erGyldigPosisjon()
     {
         // hvis listen med kolliderte gameobjekter er større enn 0  
-        if (placeableForsvarselement.colliders.Count > 0)
+       /* if (placeableForsvarselement.colliders.Count > 0)
         {
             // kan ikke plasseres
             return false;
         }
-
+*/
         // kan plasseres
         return true;
     }

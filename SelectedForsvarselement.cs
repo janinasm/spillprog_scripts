@@ -4,13 +4,19 @@ using System.Collections;
 public class SelectedForsvarselement : MonoBehaviour
 {
     public bool erValgt;
-    private float buttonOffset = 20f;
+	public GameObject detectArea;
+	public GameObject feCanvas;
+	private float buttonOffset = 20f;
     private float buttonWidth = 80f;
 
     // script referanser
     private GameObject scriptHolder;
     private ForsvarselementPlacement forsvarselementPlacementScript;
+	private MeshRenderer detectAreaMesh;
 
+	void Awake(){
+		detectAreaMesh = detectArea.GetComponent<MeshRenderer> ();
+	}
     void Start()
     {
         // cacher referansr
@@ -19,13 +25,28 @@ public class SelectedForsvarselement : MonoBehaviour
 
     public void settSomValgt(bool v)
     {
-        erValgt = v;
+		if (v) {
+			erValgt = v;
+			detectAreaMesh.enabled = true;
+			//feCanvas.SetActive (true);
+		} else {
+			erValgt = v;
+			detectAreaMesh.enabled = false;
+			//feCanvas.SetActive (false);
+
+		}
+
+
     }
+	//Gammel Gui kode
 
     void OnGUI()
     {
         if (erValgt && GameManager.instance.erForberedelsesFase)
         {
+
+
+		
 
             Vector2 targetPos;
             targetPos = Camera.main.WorldToScreenPoint(transform.position);

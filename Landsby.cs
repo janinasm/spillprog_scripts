@@ -4,14 +4,14 @@ using UnityEngine.UI;
 
 public class Landsby : MonoBehaviour
 {
+	public int oppgraderingKostnad = 1000;
+	public int level = 1;
     public float helse;
-    public int skade;
-    public float tidMellomAngrip;
+	public float reparerTilHelse;
 
-    void Start()
+	public void Awake ()
     {
         helse = 1000f;
-        skade = 100;
-        tidMellomAngrip = 3f;
+		reparerTilHelse = helse;
     }
 }

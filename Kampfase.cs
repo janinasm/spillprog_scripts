@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class Kampfase : MonoBehaviour
@@ -8,11 +8,10 @@ public class Kampfase : MonoBehaviour
     public int antallFiender;
     public int spawnedeFiender;
 
-    private float ventMedGruppe;
-    private float ventMedFiende;
+    public float ventMedGruppe;
+    public float ventMedFiende;
 
-    private bool erIgangMedSpawning = false;
-    private bool erForsteWave;
+	private bool erIgangMedSpawning = false;
 
     // gameobject referanser
     public Transform fiendeHolder;
@@ -21,27 +20,36 @@ public class Kampfase : MonoBehaviour
     private FaseSkifte faseSkifte;
     private FaseGUI faseGUI;
     private Forberedelsesfase forberedelsesfase;
+	private int antallVikingerAaDrepe;
 
-    void Start()
+
+	//Skript referanser
+	private SpawnpointManager spawnpointManager;
+
+	void Start()
     {
         // cacher referanser
         faseSkifte = GetComponent<FaseSkifte>();
         faseGUI = GetComponent<FaseGUI>();
         forberedelsesfase = GetComponent<Forberedelsesfase>();
+		spawnpointManager = GameObject.Find ("Spawnpoints").GetComponent<SpawnpointManager> ();
 
         // setter verdier
         spawnedeFiender = fiendeHolder.transform.childCount;
-
-        antallFienderPerWave = 3;
+   
+		antallFienderPerWave = 3;
         antallWave = 1;
         antallFiender = 0;
 
-        ventMedGruppe = 5f;
-        ventMedFiende = 1f;
+        ventMedGruppe = 15f;
+        ventMedFiende = 4f;
+
     }
 
     void Update()
     {
+		faseGUI.fienderIgjen.text = antallVikingerAaDrepe.ToString();
+		antallFiender = spawnpointManager.antallfiender;
         // dersom det ikke er forbereldesfase
         if (!GameManager.instance.erForberedelsesFase)
         {
@@ -55,75 +63,33 @@ public class Kampfase : MonoBehaviour
 
     public void startKampfase()
     {
+		antallVikingerAaDrepe = (antallFienderPerWave * GameManager.instance.runde);
+		Debug.Log (antallVikingerAaDrepe);
         // disabler gameobject som viser GUI for funksjonalitet som ikke kan gjøres i kampfase
         faseGUI.slotContainer.SetActive(false);
+		faseGUI.faseTimer.SetActive (false);
+		faseGUI.fiendeTeller.SetActive (true);
 
         // sier at det er første wave av fiender i denne runden
-        erForsteWave = true;
+		spawnpointManager.ErForsteFase (true);
 
         // starter metoden som spawner fiender
         // den skal bare starte om det ikke er igang med spawning 
         // (ikke sikkert om sjekken trengs, men lar den stå)
-        if (!erIgangMedSpawning) StartCoroutine("spawnFiender");
-    }
-
-    public IEnumerator spawnFiender()
-    {
-        // det velges et eget spawnpoint for hver gruppe (wave) av fiender i per kampfase
-        // for antall runder som har gått skal det kjøres en egen for loop
-        for (int i = 0; i < GameManager.instance.runde; i++)
-        {
-            // dersom det ikke er den første gruppen av fiender skal det ventes før neste gruppe
-            if (!erForsteWave)
-            {
-                // venter med neste gruppe
-                yield return new WaitForSeconds(ventMedGruppe);
-            }
-
-            // det er ikke lenger første wave av fiender
-            erForsteWave = false;
-
-            // denne loopen kjøres for hver fiende vi har i en gruppe (wave)
-            for (int j = 0; j < antallFienderPerWave; j++)
-            {
-                // venter med å lage neste fiende
-                yield return new WaitForSeconds(ventMedFiende);
-
-                GameObject fiendeInstance;
-
-                // instantiater (spawner) fiende på plasseringen til spawnpoint fra listen med tilfeldige spawnpoints
-                fiendeInstance = Instantiate(GameManager.instance.fiende, forberedelsesfase.randSpawnpointListe[i].transform.position, Quaternion.identity) as GameObject;
-
-                // legger de i et annet gameobject (for orden i hierarkiet)
-                fiendeInstance.transform.parent = fiendeHolder.transform;
-
-                // øker for hver fiende vi legger til
-                antallFiender++;
-
-                // vi er i gang med spawning
-                erIgangMedSpawning = true;
-            }
-        }
-
-        // vi er ferdige med spawning
-        erIgangMedSpawning = false;
+        if (!erIgangMedSpawning) spawnpointManager.StartCoroutine("spawnFiender");
     }
 
     // midlertidig måte å finne ut om alle fiendene er drept
     public void sjekkOmAlleFienderErDrept()
     {
         // henter antallet fiender som finnes i spillverden
-        spawnedeFiender = fiendeHolder.transform.childCount;
 
         // hvis antall fiender i spillverden er 0, 
         // og antallet fiender som er blitt spawnet er likt antallet fiender som skal spawne i denne runden
-        if (spawnedeFiender == 0 && antallFiender == (antallFienderPerWave * GameManager.instance.runde))
+        if (antallVikingerAaDrepe == 0)
         {
             // reset antall fiender
             antallFiender = 0;
-
-            // kjør metode som resetter lys
-            resetSpawnpointLys();
 
             // sett forberedelsfase
             GameManager.instance.erForberedelsesFase = true;
@@ -144,9 +110,6 @@ public class Kampfase : MonoBehaviour
 
     public void slettAlleFiender()
     {
-        // kjør metode som resetter lys
-        resetSpawnpointLys();
-
         // henter antall fiender i fiendeholderen
         int childs = fiendeHolder.childCount;
 
@@ -156,19 +119,25 @@ public class Kampfase : MonoBehaviour
             GameObject.Destroy(fiendeHolder.GetChild(i).gameObject);
         }
     }
+	
 
-    // metode som resetter lys
-    public void resetSpawnpointLys()
-    {
-        // for hvert lys i listen over tilfelige spawnpoints
-        for (int i = 0; i < forberedelsesfase.randSpawnpointListe.Count; i++)
-        {
-            forberedelsesfase.randSpawnpointListe[i].GetComponent<Light>().enabled = false;
-            forberedelsesfase.randSpawnpointListe[i].GetComponent<Light>().color = Color.yellow;
-            forberedelsesfase.randSpawnpointListe[i].GetComponent<Light>().intensity = 1;
-        }
+	public void ErIgangMedSpwaning(bool b){
+		erIgangMedSpawning = b;
+	}
 
-        // tømmer lista med randomiserte spawnpoints
-        forberedelsesfase.randSpawnpointListe.Clear();
-    }
+	public int AntallFienderPerWave{ get; set;}
+	public int AntallWave{ get; set;}
+	public int AntallFiender{ get; set;}
+	
+	public float VentMedGruppe {get; set;}
+	public float VentMedFiende {get; set;}
+
+	public void SettAntallFiender(){
+		antallFiender ++;
+	}
+
+	public void DreptFiende(){
+		antallVikingerAaDrepe--;
+	}
+
 }
